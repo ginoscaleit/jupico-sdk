@@ -1,0 +1,81 @@
+{
+  "name": "@jupico/react-native-wallets",
+  "version": "0.1.0",
+  "description": "Unified React Native + native wrapper for Apple Pay (PassKit) and Google Pay. Native cores are RN-agnostic and reusable in standalone iOS/Android apps.",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "clean": "del-cli lib",
+    "prepare": "bob build"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "apple-pay",
+    "google-pay",
+    "passkit",
+    "payments",
+    "wallet",
+    "turbo-module"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@react-native/babel-preset": "0.76.0",
+    "@types/react": "^18.2.0",
+    "del-cli": "^5.1.0",
+    "react": "18.3.1",
+    "react-native": "0.76.0",
+    "react-native-builder-bob": "^0.30.0",
+    "typescript": "^5.4.5"
+  },
+  "codegenConfig": {
+    "name": "RNJupicoWalletsSpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.jupico.wallets"
+    }
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}
