@@ -5,7 +5,10 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, min_ios_version_supported
+# iOS 16.0 (not RN's 15.1 default): below iOS 15.4 the Swift compiler
+# auto-links libswiftCompatibility56.a, which Xcode 26 no longer ships,
+# producing an undefined __swift_FORCE_LOAD_$_swiftCompatibility56 at link time.
+platform :ios, '16.0'
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -36,5 +39,12 @@ target 'WalletExample' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Must run AFTER react_native_post_install, which resets deployment targets.
+    installer.pods_project.targets.each do |t|
+      t.build_configurations.each do |c|
+        c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+      end
+    end
   end
 end
