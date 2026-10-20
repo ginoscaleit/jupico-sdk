@@ -5,10 +5,18 @@
  * and Google Pay cores, delegating to the Turbo Module and translating native
  * rejections into a typed {@link WalletError}.
  */
-import { Platform } from 'react-native';
-import Native from './NativeJupicoWallets';
+import { Platform, TurboModuleRegistry, NativeModules } from 'react-native';
+import type { Spec } from './NativeJupicoWallets';
 import { fromNativeRejection, WalletError } from './errors';
 import type { PaymentRequest, PaymentResult } from './types';
+
+// Resolve the native module in a way that works under BOTH the New Architecture
+// (TurboModule) and the legacy bridge (NativeModules). We import only the *type*
+// from NativeJupicoWallets so Codegen still sees that file's getEnforcing spec,
+// while runtime resolution stays defensive.
+const Native: Spec =
+  TurboModuleRegistry.get<Spec>('JupicoWallets') ??
+  (NativeModules.JupicoWallets as Spec);
 
 export * from './types';
 export { WalletError } from './errors';
