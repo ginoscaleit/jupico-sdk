@@ -19,8 +19,9 @@ import {
 } from '@jupico/react-native-wallets';
 
 // Google's canonical TEST tokenization: returns a dummy token with no real PSP.
-// On iOS this is a placeholder merchant id (Apple Pay needs a real Merchant ID
-// entitlement + real device to present a live sheet).
+// On iOS the merchantIdentifier MUST match an entry in the app's
+// com.apple.developer.in-app-payments entitlement, or PassKit refuses to
+// present the sheet. A live sheet also requires a real device with a card.
 const request: PaymentRequest = {
   currencyCode: 'USD',
   lineItems: [
@@ -36,7 +37,7 @@ const request: PaymentRequest = {
     parameters: {gatewayMerchantId: 'exampleGatewayMerchantId'},
   },
   apple: {
-    merchantIdentifier: 'merchant.team.jupico.example',
+    merchantIdentifier: 'merchant.com.jupico.prod',
     countryCode: 'US',
     merchantCapabilities: ['3ds'],
   },
