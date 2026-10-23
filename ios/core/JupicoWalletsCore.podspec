@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "JupicoWalletsCore"
   s.version      = "0.1.0"
-  s.summary      = "RN-agnostic Apple Pay (PassKit) core. Usable directly from any Swift/ObjC app."
+  s.summary      = "RN-agnostic Apple Pay (PassKit) core and ApplePayJupicoView UI. Usable directly from any Swift/ObjC app."
   s.homepage     = "https://github.com/jupico/react-native-wallets"
   s.license      = "MIT"
   s.authors      = { "Jupico" => "dev@jupico.team" }
@@ -10,7 +10,8 @@ Pod::Spec.new do |s|
 
   # ONLY the core — no React Native. This is the artifact a native-only iOS
   # team adds to their Podfile: pod 'JupicoWalletsCore'.
-  s.source_files  = "*.swift"
-  s.frameworks    = "PassKit"
+  # Paths are relative to the repo root (the pod's :git source), not this file.
+  s.source_files  = "ios/core/*.swift"
+  s.frameworks    = "PassKit", "UIKit", "SwiftUI"
   s.swift_version = "5.0"
 end

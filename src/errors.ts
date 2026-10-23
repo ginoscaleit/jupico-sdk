@@ -12,6 +12,8 @@ export type WalletErrorCode =
   | 'NO_ELIGIBLE_CARDS'
   /** Config passed from JS was invalid (bad merchant id, empty items, ...). */
   | 'INVALID_CONFIGURATION'
+  /** The Jupico `sessions` object is missing, malformed, or refused by the backend. */
+  | 'INVALID_SESSION'
   /** Network / gateway error mid-flow. */
   | 'NETWORK_ERROR'
   /** Native sheet failed for a reason we could not map. */
@@ -44,6 +46,7 @@ export function fromNativeRejection(e: unknown): WalletError {
     'UNSUPPORTED_DEVICE',
     'NO_ELIGIBLE_CARDS',
     'INVALID_CONFIGURATION',
+    'INVALID_SESSION',
     'NETWORK_ERROR',
     'PAYMENT_FAILED',
     'UNKNOWN',

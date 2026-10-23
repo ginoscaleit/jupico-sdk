@@ -21,6 +21,7 @@ const Native: Spec =
 export * from './types';
 export { WalletError } from './errors';
 export type { WalletErrorCode } from './errors';
+export * from './components';
 
 /** Which wallet the current platform will use. */
 export function activeWallet(): 'apple-pay' | 'google-pay' | 'unsupported' {

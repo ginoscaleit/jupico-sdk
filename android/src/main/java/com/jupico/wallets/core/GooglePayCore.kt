@@ -146,6 +146,10 @@ class GooglePayCore(private val config: Map<String, Any?>) {
             .put("currencyCode", currency)
     }
 
+    /** allowedPaymentMethods JSON array, as Google's PayButton expects it. */
+    fun allowedPaymentMethodsJson(): String =
+        JSONArray().put(cardPaymentMethod()).toString()
+
     /** IsReadyToPay request JSON. */
     fun isReadyToPayRequest(): IsReadyToPayRequest {
         val json = baseRequest()
