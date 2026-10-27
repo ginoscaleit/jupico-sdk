@@ -14,7 +14,10 @@ jobs:
     timeout-minutes: 60
     env:
       SCHEME: WalletExample
-      WORKSPACE: example/ios/WalletExample.xcworkspace
+      # The React Native SDK lives in jupico-react-native/; the root example/ is
+      # the earlier research build and is no longer shipped.
+      APP_DIR: jupico-react-native/example
+      WORKSPACE: jupico-react-native/example/ios/WalletExample.xcworkspace
 
     steps:
       - uses: actions/checkout@v4
@@ -48,23 +51,24 @@ jobs:
         with:
           node-version: "20"
 
-      # Root install first: the example depends on the SDK via "file:..",
-      # and the root 'prepare' script (bob build) must run so lib/ exists.
+      # SDK install first: the example depends on it via "file:..", and its
+      # 'prepare' script (bob build) must run so lib/ exists.
       - name: Install SDK dependencies
+        working-directory: jupico-react-native
         run: npm ci
 
       - name: Install example dependencies
-        working-directory: example
+        working-directory: ${{ env.APP_DIR }}
         run: npm ci
 
       - name: Install CocoaPods
-        working-directory: example/ios
+        working-directory: ${{ env.APP_DIR }}/ios
         run: pod install --repo-update
 
       # TestFlight rejects duplicate build numbers, so always use a fresh one.
       # Marketing version (1.0) is left alone.
       - name: Set build number
-        working-directory: example/ios
+        working-directory: ${{ env.APP_DIR }}/ios
         run: |
           BUILD_NO="${{ github.event.inputs.build_number || github.run_number }}"
           echo "Using build number $BUILD_NO"
@@ -132,7 +136,7 @@ jobs:
           set -euo pipefail
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/WalletExample.xcarchive" \
-            -exportOptionsPlist example/ios/ExportOptions.plist \
+            -exportOptionsPlist "$APP_DIR/ios/ExportOptions.plist" \
             -exportPath "$RUNNER_TEMP/export"
           echo "--- signature check ---"
           codesign -dvvv "$RUNNER_TEMP/export/../WalletExample.xcarchive/Products/Applications/WalletExample.app" 2>&1 | grep Authority= || true

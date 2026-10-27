@@ -1,0 +1,78 @@
+{
+  "name": "@jupico/react-native-wallets",
+  "version": "0.1.0",
+  "description": "Jupico Apple Pay and Google Pay components for React Native — the native counterpart of the <apple-pay-jupico> / <google-pay-jupico> web components.",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "*.podspec",
+    "react-native.config.js",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/.*",
+    "ONBOARDING.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "clean": "del-cli lib",
+    "prepare": "bob build"
+  },
+  "keywords": [
+    "react-native",
+    "apple-pay",
+    "google-pay",
+    "jupico",
+    "payments",
+    "wallet"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@react-native/babel-preset": "0.76.0",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^18.2.0",
+    "del-cli": "^5.1.0",
+    "jest": "^29.6.3",
+    "react": "18.3.1",
+    "react-native": "0.76.0",
+    "react-native-builder-bob": "^0.30.0",
+    "typescript": "^5.4.5"
+  },
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/",
+      "<rootDir>/lib/"
+    ]
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}
