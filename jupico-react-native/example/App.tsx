@@ -22,9 +22,15 @@ import {
 
 // Must match the com.apple.developer.in-app-payments entitlement of this app.
 const MERCHANT_ID = 'merchant.com.jupico.prod';
-const AUTHORIZE_URL = 'https://sandbox-platform.jupico.com/v1/sessions/browser/authorize';
+// Platform API that creates the session. The session it returns carries its
+// environment, and the SDK picks hosted-api and VGS from that.
+const AUTHORIZE_URLS = {
+  sandbox: 'https://sandbox-platform.jupico.com/v1/sessions/browser/authorize',
+  dev: 'https://dev-platform.jupico.com/v1/sessions/browser/authorize',
+};
 
 type Source = 'create' | 'paste';
+type Env = keyof typeof AUTHORIZE_URLS;
 
 /** SDK trace kinds, plus what the demo app itself does. */
 type Kind = WalletLogKind | 'app' | 'handler';
@@ -79,6 +85,7 @@ function parsePastedSessions(text: string): JupicoSessions {
 
 export default function App() {
   const [source, setSource] = useState<Source>('create');
+  const [env, setEnv] = useState<Env>('sandbox');
   const [form, setForm] = useState({
     subMerchantId: 'jpt-sim-md-1',
     username: '',
@@ -129,9 +136,10 @@ export default function App() {
       applePay: {enabled: true, amount, description: form.description},
       googlePay: {enabled: true, amount, description: form.description},
     };
-    append('app', `backend stand-in: POST ${AUTHORIZE_URL}`, body);
+    const url = AUTHORIZE_URLS[env];
+    append('app', `backend stand-in: POST ${url}`, body);
     try {
-      const res = await fetch(AUTHORIZE_URL, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +150,7 @@ export default function App() {
       const json = await res.json();
       append('app', `backend stand-in: HTTP ${res.status}`, json);
       if (res.ok && json?.data?.sessions) {
-        loadSessions(json.data.sessions, 'sandbox authorize');
+        loadSessions(json.data.sessions, `${env} authorize`);
       }
     } catch (e: any) {
       append('app', 'backend stand-in: request failed', {message: e?.message});
@@ -209,7 +217,7 @@ export default function App() {
               style={[styles.segmentItem, s === source && styles.segmentActive]}
               onPress={() => setSource(s)}>
               <Text style={[styles.segmentText, s === source && styles.segmentTextActive]}>
-                {s === 'create' ? 'Create (sandbox)' : 'Paste'}
+                {s === 'create' ? 'Create' : 'Paste'}
               </Text>
             </TouchableOpacity>
           ))}
@@ -221,6 +229,18 @@ export default function App() {
               <Text style={styles.hint}>
                 Stands in for the merchant backend. Credentials stay in memory only.
               </Text>
+              <View style={[styles.segment, styles.envSegment]}>
+                {(Object.keys(AUTHORIZE_URLS) as Env[]).map(e => (
+                  <TouchableOpacity
+                    key={e}
+                    style={[styles.segmentItem, e === env && styles.segmentActive]}
+                    onPress={() => setEnv(e)}>
+                    <Text style={[styles.segmentText, e === env && styles.segmentTextActive]}>
+                      {e === 'sandbox' ? 'Sandbox' : 'Dev'}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
               {field('subMerchantId', 'subMerchantId')}
               {field('username', 'API username')}
               {field('password', 'API password', true)}
@@ -355,6 +375,7 @@ const styles = StyleSheet.create({
   segmentActive: {backgroundColor: '#2c2c3a'},
   segmentText: {color: '#8a8a99', fontSize: 13, fontWeight: '600'},
   segmentTextActive: {color: '#fff'},
+  envSegment: {backgroundColor: '#0f0f15', marginTop: 12},
   card: {backgroundColor: '#17171f', borderRadius: 14, padding: 16, gap: 10},
   hint: {color: '#8a8a99', fontSize: 13, lineHeight: 18},
   row: {flexDirection: 'row', gap: 10},
