@@ -355,11 +355,17 @@ Intentional differences from the web:
    - resolves the promise.
 
    **The sheet stays open:** Swift holds Apple's completion handler.
-   Email and phone are requested as shipping fields, because Apple only returns
-   them there, and are merged into `billingContact`.
+   Only name and postal address are requested. Apple Pay JS ignores email and
+   phone on billing fields, so the web's `billingContact` has neither, and the
+   native one matches it.
 9. **Get a Jupico one-time token.** `buildApplePayOttBody()` (the web's
    `ottPayload`) is posted by `requestOneTimeToken()` to `buildVgsWalletUrl()`.
    VGS decrypts the Apple token and forwards it to Jupico, which returns `data.oneTimeToken.data`.
+   VGS can only decrypt tokens encrypted for a Merchant ID whose processing
+   certificate its route holds. If the app uses any other Merchant ID, VGS
+   answers 422 "Operation failed" without forwarding (`upstream: null` in its
+   logs). Compare `token.paymentData.header.publicKeyHash` with a web payment's
+   on the same environment to check.
 10. **Close the sheet.** `completeApplePay(true)`: Swift calls the stored handler
     with `.success`, so Apple shows ✓ and closes the sheet. On any failure the SDK
     calls `completeApplePay(false)` and Apple shows ✗.

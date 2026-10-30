@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import {
   ApplePayJupico,
+  decodeWalletSession,
   GooglePayJupico,
   type JupicoSessions,
   type SubmitErrorEvent,
@@ -20,8 +21,16 @@ import {
   type WalletLogKind,
 } from '@jupico/react-native-wallets';
 
-// Must match the com.apple.developer.in-app-payments entitlement of this app.
-const MERCHANT_ID = 'merchant.com.jupico.prod';
+// Apple encrypts the token for this Merchant ID's processing certificate, so it
+// must be the one the environment's VGS route decrypts with (the same one the
+// web uses there). Each must also be in this app's in-app-payments entitlement.
+const MERCHANT_IDS: Record<string, string> = {
+  development: 'merchant.com.jupico.dev',
+  sandbox: 'merchant.com.jupico.applepay',
+  production: 'merchant.com.jupico.prod',
+};
+const merchantIdFor = (s: JupicoSessions | null) =>
+  MERCHANT_IDS[decodeWalletSession(s, 'applePay')?.environment ?? ''] ?? MERCHANT_IDS.production!;
 // Platform API that creates the session. The session it returns carries its
 // environment, and the SDK picks hosted-api and VGS from that.
 const AUTHORIZE_URLS = {
@@ -281,7 +290,7 @@ export default function App() {
             <ApplePayJupico
               key={version}
               sessions={sessions}
-              merchantIdentifier={MERCHANT_ID}
+              merchantIdentifier={merchantIdFor(sessions)}
               buttonStyle="white"
               transactionComplete={transactionComplete}
               onSubmitError={onSubmitError}

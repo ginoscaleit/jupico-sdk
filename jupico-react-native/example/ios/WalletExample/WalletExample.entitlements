@@ -4,6 +4,8 @@
 <dict>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
+		<string>merchant.com.jupico.dev</string>
+		<string>merchant.com.jupico.applepay</string>
 		<string>merchant.com.jupico.prod</string>
 	</array>
 </dict>

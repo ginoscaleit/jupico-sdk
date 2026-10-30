@@ -101,17 +101,13 @@ final class JupicoRNWallets: NSObject {
         request.paymentSummaryItems = [
             PKPaymentSummaryItem(label: (total["label"] as? String) ?? "Payment Total", amount: amount, type: .final),
         ]
-        // Apple returns email/phone only on the shipping contact, whatever field
-        // they are requested on, so split them like Apple Pay JS does.
+        // Apple Pay JS ignores email/phone on billing fields, so the web sends a
+        // billingContact with name and address only. Match it.
         let fields = Set((r["requiredBillingContactFields"] as? [String]) ?? [])
         var billing = Set<PKContactField>()
-        var shipping = Set<PKContactField>()
         if fields.contains("name") { billing.insert(.name) }
         if fields.contains("postalAddress") { billing.insert(.postalAddress) }
-        if fields.contains("email") { shipping.insert(.emailAddress) }
-        if fields.contains("phone") { shipping.insert(.phoneNumber) }
         request.requiredBillingContactFields = billing
-        request.requiredShippingContactFields = shipping
         return request
     }
 
@@ -154,11 +150,7 @@ final class JupicoRNWallets: NSObject {
         method["displayName"] = token.paymentMethod.displayName
         method["network"] = token.paymentMethod.network?.rawValue
 
-        var contact = contactDictionary(payment.billingContact)
-        if let shipping = payment.shippingContact {
-            contact["emailAddress"] = shipping.emailAddress
-            contact["phoneNumber"] = shipping.phoneNumber?.stringValue
-        }
+        let contact = contactDictionary(payment.billingContact)
         return [
             "token": [
                 "paymentData": paymentData,
